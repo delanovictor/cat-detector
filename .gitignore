@@ -1,0 +1,4 @@
+tflite-cat/
+__pycache__/
+output/
+.env
