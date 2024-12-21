@@ -144,8 +144,8 @@ food_hit_box_height = food_hit_box_ymax - food_hit_box_ymin
 
 frame_count = 0
 current_time = 0
-last_message_time = 0
-message_cooldown = 10
+last_message_time = 30
+message_cooldown = 30
 detection_count = 0
 
 display_cooldown_message = True
@@ -175,8 +175,9 @@ while True:
 
     frame_count += 1
 
-    if frame_count % 30 == 0:
+    if frame_count % 12 == 0:
         current_time += 1
+        print(current_time)
 
     if frame_count % 150 == 0:
         display_cooldown_message = True
@@ -205,7 +206,7 @@ while True:
 
     # Loop over all detections and draw detection box if confidence is above minimum threshold
     for i in range(len(scores)):
-        
+
         if(classes[i] != 16):
             continue
 
@@ -242,7 +243,7 @@ while True:
         if(detection_count > message_detection_count_threshold):
 
             if (current_time - last_message_time > message_cooldown):
-                
+
                 detection_count = 0
                 last_message_time = current_time
 
@@ -273,7 +274,7 @@ while True:
                 # print(dominant)
         
                 best_color_distance = 99999
-                min_color_distance = 50
+                min_color_distance = 80
 
                 detected_cat = 'garfield'
 
@@ -309,10 +310,10 @@ while True:
                     print(f'{current_time} - {last_message_time} > {message_cooldown}')
                     display_cooldown_message = False
 
-    cv2.imshow('Object detector', frame)
+    # cv2.imshow('Object detector', frame)
     # Press 'q' to quit
-    if cv2.waitKey(1) == ord('q'):
-        break
+    #if cv2.waitKey(1) == ord('q'):
+    #    break
 
 # Clean up
 cv2.destroyAllWindows()

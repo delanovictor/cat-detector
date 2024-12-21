@@ -3,10 +3,12 @@ import time
 import os
 from dotenv import load_dotenv
 
+load_dotenv()
+
 def send_message(text, image_path):
     TOKEN = os.getenv('DISCORD_TOKEN')
     CHANNEL_ID = os.getenv('DISCORD_CHANNEL_ID')
-
+    #print(TOKEN, CHANNEL_ID)
     BASE_URL = f"https://discord.com/api/v9"
     SEND_URL = BASE_URL + "/channels/{id}/messages"
 
@@ -26,6 +28,6 @@ def send_message(text, image_path):
     }
 
     r1 = requests.post(SEND_URL.format(id=CHANNEL_ID), headers=headers, json=body )
-
+    print(r1.content)
     r2 = requests.post(SEND_URL.format(id=CHANNEL_ID), headers=headers, json=body, files=files)
-
+    print(r2.content)
