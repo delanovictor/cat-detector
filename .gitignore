@@ -1,4 +1,4 @@
-tflite-cat/
+.venv/
 __pycache__/
 output/
 .env

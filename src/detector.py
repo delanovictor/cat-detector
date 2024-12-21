@@ -29,8 +29,7 @@ import discord
 
 # Define and parse input arguments
 parser = argparse.ArgumentParser()
-parser.add_argument('--modeldir', help='Folder the .tflite file is located in',
-                    required=True)
+parser.add_argument('--modeldir', help='Folder the .tflite file is located in', default="model/")
 parser.add_argument('--graph', help='Name of the .tflite file, if different than detect.tflite',
                     default='detect.tflite')
 parser.add_argument('--labels', help='Name of the labelmap file, if different than labelmap.txt',
@@ -42,6 +41,7 @@ parser.add_argument('--resolution', help='Desired webcam resolution in WxH. If t
 parser.add_argument('--edgetpu', help='Use Coral Edge TPU Accelerator to speed up detection',
                     action='store_true')
 
+
 args = parser.parse_args()
 
 MODEL_NAME = args.modeldir
@@ -51,6 +51,8 @@ min_conf_threshold = float(args.threshold)
 resW, resH = args.resolution.split('x')
 imW, imH = int(resW), int(resH)
 use_TPU = args.edgetpu
+
+debug=False
 
 # =======================  START MODEL SETUP ============================
 
@@ -135,10 +137,10 @@ videostream = VideoStream(resolution=(imW,imH),framerate=30).start()
 time.sleep(1)
 
 
-food_hit_box_ymin = 170
-food_hit_box_xmin = 340
-food_hit_box_ymax = 300
-food_hit_box_xmax = 415
+food_hit_box_ymin = 100
+food_hit_box_xmin = 130
+food_hit_box_ymax = 320
+food_hit_box_xmax = 530
 food_hit_box_width = food_hit_box_xmax - food_hit_box_xmin
 food_hit_box_height = food_hit_box_ymax - food_hit_box_ymin
 
@@ -153,19 +155,6 @@ display_cooldown_message = True
 #Mínimo de Frames com detecção em um intervalo de 5 sec
 message_detection_count_threshold = 50
 
-cats = {
-    'rata':[
-        [30.421185, 33.177788,35.22104 ],
-        [27.46295,  30.34388, 32.816643]
-    ],
-    'pretinha': [
-        [18.01866,  18.789846, 21.626482]
-    ],
-    'garfield': [
-
-    ]
-}
-
 print ('Iniciando Detecção...')
 
 while True:
@@ -177,7 +166,7 @@ while True:
 
     if frame_count % 12 == 0:
         current_time += 1
-        print(current_time)
+        # print(current_time)
 
     if frame_count % 150 == 0:
         display_cooldown_message = True
@@ -230,15 +219,17 @@ while True:
             continue
 
         detection_count += 1
-        cv2.rectangle(frame, (xmin,ymin), (xmax,ymax), (10, 255, 0), 4)
 
         # Draw label
         object_name = labels[int(classes[i])] # Look up object name from "labels" array using class index
         label = '%s: %d%%' % (object_name, int(scores[i]*100)) # Example: 'person: 72%'
         labelSize, baseLine = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2) # Get font size
         label_ymin = max(ymin, labelSize[1] + 10) # Make sure not to draw label too close to top of window
-        cv2.rectangle(frame, (xmin, label_ymin-labelSize[1]-10), (xmin+labelSize[0], label_ymin+baseLine-10), (255, 255, 255), cv2.FILLED) # Draw white box to put label text in
-        cv2.putText(frame, label, (xmin, label_ymin-7), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 2) # Draw label text
+        
+        if debug:
+            cv2.rectangle(frame, (xmin,ymin), (xmax,ymax), (10, 255, 0), 4)
+            cv2.rectangle(frame, (xmin, label_ymin-labelSize[1]-10), (xmin+labelSize[0], label_ymin+baseLine-10), (255, 255, 255), cv2.FILLED) # Draw white box to put label text in
+            cv2.putText(frame, label, (xmin, label_ymin-7), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 2) # Draw label text
 
         if(detection_count > message_detection_count_threshold):
 
@@ -276,31 +267,13 @@ while True:
                 best_color_distance = 99999
                 min_color_distance = 80
 
-                detected_cat = 'garfield'
-
-                for cat in cats:
-                    for color in cats[cat]:
-                        print(f'{cat}:{color}')
-                        color_distance = np.linalg.norm(dominant-color)
-
-                        print(f'Distância: {color_distance}')
-                        print(color_distance)
-
-                        if color_distance > min_color_distance:
-                            continue
-
-                        if best_color_distance > color_distance:
-                            best_color_distance = color_distance
-                            detected_cat = cat
-
-         
                 file_name = f'output/detected-cat.jpg'
 
                 cv2.imwrite(file_name, original_frame)
 
                 print('Enviando mensagem...')
                 
-                discord.send_message(f'Gato detectado: {detected_cat}', file_name)
+                discord.send_message(f'Gato detectado!', file_name)
 
                 print('Mensagem enviada!')
 
@@ -310,10 +283,11 @@ while True:
                     print(f'{current_time} - {last_message_time} > {message_cooldown}')
                     display_cooldown_message = False
 
-    # cv2.imshow('Object detector', frame)
-    # Press 'q' to quit
-    #if cv2.waitKey(1) == ord('q'):
-    #    break
+    if debug:
+        cv2.imshow('Object detector', frame)
+        # Press 'q' to quit
+        if cv2.waitKey(1) == ord('q'):
+           break
 
 # Clean up
 cv2.destroyAllWindows()
