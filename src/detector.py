@@ -52,7 +52,7 @@ resW, resH = args.resolution.split('x')
 imW, imH = int(resW), int(resH)
 use_TPU = args.edgetpu
 
-debug=True
+debug=False
 
 # =======================  START MODEL SETUP ============================
 
