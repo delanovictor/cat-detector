@@ -52,7 +52,7 @@ resW, resH = args.resolution.split('x')
 imW, imH = int(resW), int(resH)
 use_TPU = args.edgetpu
 
-debug=False
+debug=True
 
 # =======================  START MODEL SETUP ============================
 
@@ -138,9 +138,9 @@ time.sleep(1)
 
 
 food_hit_box_ymin = 100
-food_hit_box_xmin = 130
-food_hit_box_ymax = 320
-food_hit_box_xmax = 530
+food_hit_box_xmin = 75
+food_hit_box_ymax = 440
+food_hit_box_xmax = 600
 food_hit_box_width = food_hit_box_xmax - food_hit_box_xmin
 food_hit_box_height = food_hit_box_ymax - food_hit_box_ymin
 
