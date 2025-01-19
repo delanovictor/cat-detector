@@ -74,7 +74,7 @@ else:
 if use_TPU:
     # If user has specified the name of the .tflite file, use that name, otherwise use default 'edgetpu.tflite'
     if (GRAPH_NAME == 'detect.tflite'):
-        GRAPH_NAME = 'edgetpu.tflite'       
+        GRAPH_NAME = 'edgetpu.tflite'
 
 
 
@@ -156,7 +156,7 @@ display_cooldown_message = True
 message_detection_count_threshold = 50
 
 print ('Iniciando Detecção...')
-
+discord.send_text_message("CatDetector iniciado e pronto para ação!")
 while True:
 
     # Grab frame from video stream
@@ -243,7 +243,7 @@ while True:
                 # print(ymax)
                 # print(xmax)
 
-                crop_img = frame[ ymin:ymax, xmin:xmax] 
+                crop_img = frame[ymin:ymax, xmin:xmax] 
 
                 # cv2.imshow("frame",frame)
                 # cv2.imshow("frame_resized",frame_resized)
@@ -273,7 +273,7 @@ while True:
 
                 print('Enviando mensagem...')
                 
-                discord.send_message(f'Gato detectado!', file_name)
+                discord.send_cat_image(f'Gato detectado!', file_name)
 
                 print('Mensagem enviada!')
 
